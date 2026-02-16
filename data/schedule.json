@@ -1,0 +1,46 @@
+{
+    "schedule": [
+        {
+            "event": "Opening Ceremony",
+            "date": "2025-05-01",
+            "time": "09:00 AM",
+            "location": "Main Hall"
+        },
+        {
+            "event": "Keynote Speech: The Future of Innovation",
+            "date": "2025-05-01",
+            "time": "10:00 AM",
+            "location": "Main Hall"
+        },
+        {
+            "event": "Workshop: Design Thinking",
+            "date": "2025-05-01",
+            "time": "11:30 AM",
+            "location": "Room A"
+        },
+        {
+            "event": "Lunch Break",
+            "date": "2025-05-01",
+            "time": "01:00 PM",
+            "location": "Cafeteria"
+        },
+        {
+            "event": "Panel Discussion: Innovations in Technology",
+            "date": "2025-05-01",
+            "time": "02:00 PM",
+            "location": "Main Hall"
+        },
+        {
+            "event": "Networking Session",
+            "date": "2025-05-01",
+            "time": "03:30 PM",
+            "location": "Lobby"
+        },
+        {
+            "event": "Closing Remarks",
+            "date": "2025-05-01",
+            "time": "05:00 PM",
+            "location": "Main Hall"
+        }
+    ]
+}

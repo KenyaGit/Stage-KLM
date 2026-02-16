@@ -1,0 +1,29 @@
+{
+    "demos": [
+        {
+            "title": "Innovative AI Solutions",
+            "description": "Explore cutting-edge AI technologies that are transforming industries. Join us for a live demonstration of our latest AI tools.",
+            "videoLink": "https://example.com/teaser-ai-solutions"
+        },
+        {
+            "title": "Sustainable Energy Innovations",
+            "description": "Discover innovative solutions in sustainable energy. This demo showcases new technologies aimed at reducing carbon footprints.",
+            "videoLink": "https://example.com/teaser-sustainable-energy"
+        },
+        {
+            "title": "Smart Home Technologies",
+            "description": "Experience the future of living with smart home technologies. See how these innovations can enhance your daily life.",
+            "videoLink": "https://example.com/teaser-smart-home"
+        },
+        {
+            "title": "Blockchain for Business",
+            "description": "Learn how blockchain technology is revolutionizing business operations. This demo will cover practical applications and benefits.",
+            "videoLink": "https://example.com/teaser-blockchain-business"
+        },
+        {
+            "title": "Augmented Reality Experiences",
+            "description": "Dive into the world of augmented reality. This demo will showcase interactive AR applications and their potential uses.",
+            "videoLink": "https://example.com/teaser-augmented-reality"
+        }
+    ]
+}

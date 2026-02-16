@@ -1,0 +1,488 @@
+/* KLM Innovation Fair - Custom Styles */
+
+:root {
+    --klm-blue: #00a1e4;
+    --klm-dark-blue: #0077aa;
+    --klm-light-blue: #6CC4E8;
+    --klm-white: #FFFFFF;
+    --klm-gray: #F5F5F5;
+}
+
+* {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--klm-dark-blue);
+}
+
+/* Navbar Styling */
+.navbar {
+    background: linear-gradient(135deg, var(--klm-dark-blue) 0%, var(--klm-blue) 100%);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand img {
+    height: 50px;
+    filter: brightness(0) invert(1);
+}
+
+.navbar-nav .nav-link {
+    color: var(--klm-white) !important;
+    font-weight: 500;
+    margin: 0 10px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--klm-light-blue) !important;
+    transform: translateY(-2px);
+}
+
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--klm-light-blue);
+    transition: width 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover::after {
+    width: 100%;
+}
+
+/* Hero Section */
+#home {
+    background: linear-gradient(135deg, var(--klm-dark-blue) 0%, var(--klm-blue) 100%);
+    color: var(--klm-white);
+    padding: 120px 0 80px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+#home h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    animation: fadeInUp 1s ease;
+}
+
+#home p {
+    font-size: 1.3rem;
+    margin-bottom: 30px;
+    animation: fadeInUp 1.2s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Section Styling */
+section {
+    padding: 80px 0;
+}
+
+section:nth-child(even) {
+    background-color: var(--klm-gray);
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--klm-dark-blue);
+    margin-bottom: 40px;
+    text-align: center;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: var(--klm-blue);
+    border-radius: 2px;
+}
+
+/* Schedule Cards - 3 Day Layout */
+.day-column {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    height: 100%;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.day-column:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+.day-white {
+    background: white;
+}
+
+.day-lightblue {
+    background: linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%);
+}
+
+.day-darkblue {
+    background: linear-gradient(180deg, #1976d2 0%, #0d47a1 100%);
+}
+
+.day-darkblue .day-header h3,
+.day-darkblue .day-header p,
+.day-darkblue .event-title {
+    color: white !important;
+}
+
+.day-darkblue .schedule-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-left-color: white;
+}
+
+.day-darkblue .schedule-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.day-darkblue .time-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.day-darkblue .event-location {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.day-header {
+    background: var(--klm-blue);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.day-white .day-header {
+    background: var(--klm-dark-blue);
+}
+
+.day-lightblue .day-header {
+    background: var(--klm-blue);
+}
+
+.day-darkblue .day-header {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.day-header h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.day-header p {
+    font-size: 0.9rem;
+    opacity: 0.95;
+}
+
+.day-events {
+    padding: 15px;
+}
+
+.schedule-item {
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--klm-blue);
+    transition: all 0.3s ease;
+}
+
+.schedule-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0,161,222,0.2);
+}
+
+.schedule-item.registered {
+    background: linear-gradient(135deg, #d4f4dd 0%, #e8f8ed 100%);
+    border-left-color: #28a745;
+}
+
+.time-badge {
+    display: inline-block;
+    background: var(--klm-light-blue);
+    color: var(--klm-dark-blue);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.event-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--klm-dark-blue);
+    margin-bottom: 8px;
+}
+
+.event-location {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.schedule-checkbox {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+}
+
+/* Old schedule card styles kept for detail pages */
+.schedule-card {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--klm-blue);
+}
+
+.schedule-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(0,161,222,0.3);
+}
+
+.schedule-card.registered {
+    background: linear-gradient(135deg, #d4f4dd 0%, #e8f8ed 100%);
+    border-left-color: #28a745;
+}
+
+.schedule-content {
+    cursor: pointer;
+    flex-grow: 1;
+}
+
+.schedule-time {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--klm-blue);
+    margin-bottom: 10px;
+}
+
+.schedule-location {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+/* Demo Cards */
+.demo-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+}
+
+.demo-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    height: 100%;
+    cursor: pointer;
+}
+
+.demo-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 30px rgba(0,161,222,0.3);
+}
+
+.demo-card img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.demo-card-body {
+    padding: 25px;
+}
+
+.demo-card h5 {
+    color: var(--klm-dark-blue);
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.demo-card p {
+    color: #666;
+    line-height: 1.6;
+}
+
+/* Forms */
+.form-section {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-control, .form-select {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--klm-blue);
+    box-shadow: 0 0 0 0.2rem rgba(0,161,222,0.25);
+}
+
+.btn-klm {
+    background: linear-gradient(135deg, var(--klm-blue) 0%, var(--klm-dark-blue) 100%);
+    color: white;
+    padding: 12px 40px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-klm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,161,222,0.4);
+    color: white;
+}
+
+.btn-video {
+    background: var(--klm-blue);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-video:hover {
+    background: var(--klm-dark-blue);
+    color: white;
+}
+
+/* Alert Messages */
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+/* Footer */
+footer {
+    background: var(--klm-dark-blue);
+    color: var(--klm-white);
+    padding: 30px 0;
+    text-align: center;
+}
+
+footer a {
+    color: var(--klm-light-blue);
+    text-decoration: none;
+}
+
+/* Demo Detail Page */
+.demo-detail-section {
+    min-height: 100vh;
+    background-color: var(--klm-gray);
+}
+
+.demo-detail-section img {
+    max-height: 400px;
+    object-fit: cover;
+    width: 100%;
+}
+
+.demo-detail-section .list-group-item {
+    border-left: 3px solid var(--klm-blue);
+    margin-bottom: 10px;
+    border-radius: 8px !important;
+}
+
+.demo-detail-section .list-group-item:hover {
+    background-color: var(--klm-gray);
+}
+
+/* Carousel Styling */
+.carousel {
+    padding: 40px 0;
+}
+
+.carousel-item {
+    min-height: 500px;
+    padding: 20px 0;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: var(--klm-blue);
+    border-radius: 50%;
+    padding: 30px;
+}
+
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+}
+
+.carousel-indicators button {
+    background-color: var(--klm-blue);
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.carousel-indicators {
+    margin-bottom: -20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    #home h1 {
+        font-size: 2.5rem;
+    }
+    
+    #home p {
+        font-size: 1.1rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .day-column {
+        margin-bottom: 20px;
+    }
+    
+    .carousel-item {
+        min-height: 450px;
+    }
+}
