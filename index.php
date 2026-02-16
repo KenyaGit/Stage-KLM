@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quick_register'])) {
     
     if ($email && $name && !empty($selectedDemos)) {
         $user = new User($dbh);
+        // Get existing registrations from DATABASE for THIS email
         $existingDemos = $user->getUserRegistrations($email);
         
         $registeredCount = 0;
@@ -42,11 +43,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quick_register'])) {
         
         if ($registeredCount > 0) {
             $success_message = "Successfully registered for $registeredCount demo(s)! Check your email for confirmation.";
+            // Update session with THIS user's email and registrations
             $_SESSION['user_email'] = $email;
+            $_SESSION['registration_email'] = $email;
             $_SESSION['registered_demos'] = $user->getUserRegistrations($email);
         } else {
             $error_message = 'You are already registered for the selected demo(s).';
         }
+    } else {
+        $error_message = 'Please fill in all required fields and select at least one demo.';
     }
 }
 
@@ -79,11 +84,12 @@ $demosStmt = $dbh->query("SELECT * FROM demos");
 $demos = $demosStmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get user's registered demos if they have a session
-$userEmail = $_SESSION['user_email'] ?? '';
+$userEmail = $_SESSION['user_email'] ?? $_SESSION['registration_email'] ?? '';
 $registeredDemos = [];
 if ($userEmail) {
     $user = new User($dbh);
     $registeredDemos = $user->getUserRegistrations($userEmail);
+    $_SESSION['registered_demos'] = $registeredDemos;
 }
 ?>
 
@@ -188,6 +194,17 @@ if ($userEmail) {
         <div class="container">
             <h2 class="section-title">Innovation Demos</h2>
             <p class="text-center mb-4">Explore our cutting-edge innovation showcases</p>
+            
+            <?php if (isset($_SESSION['registration_email']) && !empty($registeredDemos)): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="bi bi-check-circle"></i> Successfully registered for <?php echo count($registeredDemos); ?> demo(s)! Check your email for confirmation.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <?php 
+                // Clear the flag after showing the message once
+                unset($_SESSION['registration_email']);
+                ?>
+            <?php endif; ?>
             
             <!-- Carousel -->
             <div id="demosCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500">

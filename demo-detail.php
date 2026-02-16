@@ -15,41 +15,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     $department = $_POST['department'] ?? '';
     $selectedDemos = $_POST['demos'] ?? [];
     
-    $user = new User($dbh);
-    
-    // Get existing registrations to avoid duplicates
-    $existingDemos = $user->getUserRegistrations($email);
-    
-    $registeredCount = 0;
-    foreach ($selectedDemos as $demo) {
-        if (!in_array($demo, $existingDemos)) {
-            if ($user->signUp($name, $email, $demo, $department)) {
-                $registeredCount++;
-                
-                // Send confirmation email for each new demo
-                $workshopStmt = $dbh->query(
-                    "SELECT s.date, s.time, s.location FROM schedule s 
-                     WHERE s.event = :demo LIMIT 1",
-                    ['demo' => $demo]
-                );
-                $workshop = $workshopStmt->fetch(PDO::FETCH_ASSOC);
-                
-                if ($workshop) {
-                    $workshopDate = date("l, F j, Y", strtotime($workshop['date']));
-                    $workshopTime = date("g:i A", strtotime($workshop['time']));
-                    $workshopLocation = $workshop['location'];
+    if (empty($selectedDemos)) {
+        $error_message = 'Please select at least one demo.';
+    } else {
+        $user = new User($dbh);
+        
+        // Get existing registrations from DATABASE for THIS email
+        $existingDemos = $user->getUserRegistrations($email);
+        
+        $registeredCount = 0;
+        foreach ($selectedDemos as $demo) {
+            if (!in_array($demo, $existingDemos)) {
+                if ($user->signUp($name, $email, $demo, $department)) {
+                    $registeredCount++;
                     
-                    Mailer::sendWorkshopConfirmation($name, $email, $demo, $workshopDate, $workshopTime, $workshopLocation);
+                    // Send confirmation email for each new demo
+                    $workshopStmt = $dbh->query(
+                        "SELECT s.date, s.time, s.location FROM schedule s 
+                         WHERE s.event = :demo LIMIT 1",
+                        ['demo' => $demo]
+                    );
+                    $workshop = $workshopStmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($workshop) {
+                        $workshopDate = date("l, F j, Y", strtotime($workshop['date']));
+                        $workshopTime = date("g:i A", strtotime($workshop['time']));
+                        $workshopLocation = $workshop['location'];
+                        
+                        Mailer::sendWorkshopConfirmation($name, $email, $demo, $workshopDate, $workshopTime, $workshopLocation);
+                    }
                 }
             }
         }
-    }
-    
-    if ($registeredCount > 0) {
-        $success_message = "Successfully registered for $registeredCount demo(s)! Check your email for confirmation.";
-        $_SESSION['registered_demos'] = $user->getUserRegistrations($email);
-    } else {
-        $error_message = 'You are already registered for the selected demo(s).';
+        
+        if ($registeredCount > 0) {
+            $success_message = "Successfully registered for $registeredCount demo(s)! Check your email for confirmation.";
+            // Update session with THIS user's email and registrations
+            $_SESSION['user_email'] = $email;
+            $_SESSION['registration_email'] = $email;
+            $_SESSION['registered_demos'] = $user->getUserRegistrations($email);
+            
+            // Redirect to homepage demos section after successful registration
+            header('Location: index.php#demos');
+            exit;
+        } else {
+            $error_message = 'You are already registered for the selected demo(s).';
+        }
     }
 }
 
@@ -70,8 +81,13 @@ $schedules = $scheduleStmt->fetchAll(PDO::FETCH_ASSOC);
 $allDemosStmt = $dbh->query("SELECT * FROM demos");
 $allDemos = $allDemosStmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Get user's registered demos if they have a session
-$registeredDemos = $_SESSION['registered_demos'] ?? [];
+// Get user's registered demos from session (only show if there's an active session)
+$userEmail = $_SESSION['user_email'] ?? $_SESSION['registration_email'] ?? '';
+$registeredDemos = [];
+if ($userEmail) {
+    $user = new User($dbh);
+    $registeredDemos = $user->getUserRegistrations($userEmail);
+}
 ?>
 
 <!DOCTYPE html>
@@ -90,7 +106,7 @@ $registeredDemos = $_SESSION['registered_demos'] ?? [];
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="index.php">
-                <img src="img/logo.jpg" alt="KLM Logo" class="me-2">
+                <img src="img/KLM2.png" alt="KLM Logo" class="me-2">
                 <span class="fw-bold">Innovation Pop Up</span>
             </a>
             <a href="index.php" class="btn btn-outline-light">
@@ -194,12 +210,11 @@ $registeredDemos = $_SESSION['registered_demos'] ?? [];
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" name="demos[]" 
                                                    value="<?php echo htmlspecialchars($d['title']); ?>" 
-                                                   id="demo_<?php echo $d['demoID']; ?>"
-                                                   <?php echo in_array($d['title'], $registeredDemos) ? 'checked' : ''; ?>>
+                                                   id="demo_<?php echo $d['demoID']; ?>">
                                             <label class="form-check-label" for="demo_<?php echo $d['demoID']; ?>">
                                                 <?php echo htmlspecialchars($d['title']); ?>
-                                                <?php if (in_array($d['title'], $registeredDemos)): ?>
-                                                    <span class="badge bg-success">Registered</span>
+                                                <?php if ($userEmail && in_array($d['title'], $registeredDemos)): ?>
+                                                    <span class="badge bg-success">Already Registered</span>
                                                 <?php endif; ?>
                                             </label>
                                         </div>

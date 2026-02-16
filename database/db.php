@@ -6,6 +6,19 @@ class Database {
     public function __construct() {
         $this->conn = new PDO("mysql:host=localhost;dbname=klm", "root", "");
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        // Ensure the sign_up table has the optional columns we expect
+        try {
+            $hasDept = $this->conn->query("SHOW COLUMNS FROM sign_up LIKE 'department'")->fetch();
+            if (!$hasDept) {
+                $this->conn->exec("ALTER TABLE sign_up ADD COLUMN department varchar(255) NULL AFTER demo");
+            }
+            $hasRegisteredAt = $this->conn->query("SHOW COLUMNS FROM sign_up LIKE 'registered_at'")->fetch();
+            if (!$hasRegisteredAt) {
+                $this->conn->exec("ALTER TABLE sign_up ADD COLUMN registered_at datetime DEFAULT CURRENT_TIMESTAMP AFTER department");
+            }
+        } catch (PDOException $e) {
+            // If the sign_up table doesn't exist yet, ignore; migrations or klm.sql should create it.
+        }
     }
 
     public function getConnection() {
