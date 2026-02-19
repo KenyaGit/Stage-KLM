@@ -17,9 +17,9 @@ The website now sends automatic confirmation emails when users register for work
    - Find and update these settings:
    ```ini
    [mail function]
-   SMTP=smtp.gmail.com
+   SMTP=smtp.outlook.com
    smtp_port=587
-   sendmail_from=your-email@gmail.com
+   sendmail_from=your-email@outlook.com
    sendmail_path="\"C:\xampp\sendmail\sendmail.exe\" -t"
    ```
 
@@ -28,11 +28,11 @@ The website now sends automatic confirmation emails when users register for work
    - Update these settings:
    ```ini
    [sendmail]
-   smtp_server=smtp.gmail.com
+   smtp_server=smtp.outlook.com
    smtp_port=587
-   auth_username=your-email@gmail.com
+   auth_username=your-email@outlook.com
    auth_password=your-app-password
-   force_sender=your-email@gmail.com
+   force_sender=your-email@outlook.com
    ```
 
 3. **For Gmail**: 

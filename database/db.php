@@ -78,7 +78,5 @@ class Contact {
     }
 }
 
-require_once __DIR__ . '/mailer.php';
-
 $dbh = new Database("klm");
 ?>

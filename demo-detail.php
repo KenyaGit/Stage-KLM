@@ -28,22 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             if (!in_array($demo, $existingDemos)) {
                 if ($user->signUp($name, $email, $demo, $department)) {
                     $registeredCount++;
-                    
-                    // Send confirmation email for each new demo
-                    $workshopStmt = $dbh->query(
-                        "SELECT s.date, s.time, s.location FROM schedule s 
-                         WHERE s.event = :demo LIMIT 1",
-                        ['demo' => $demo]
-                    );
-                    $workshop = $workshopStmt->fetch(PDO::FETCH_ASSOC);
-                    
-                    if ($workshop) {
-                        $workshopDate = date("l, F j, Y", strtotime($workshop['date']));
-                        $workshopTime = date("g:i A", strtotime($workshop['time']));
-                        $workshopLocation = $workshop['location'];
-                        
-                        Mailer::sendWorkshopConfirmation($name, $email, $demo, $workshopDate, $workshopTime, $workshopLocation);
-                    }
                 }
             }
         }
@@ -55,9 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             $_SESSION['registration_email'] = $email;
             $_SESSION['registered_demos'] = $user->getUserRegistrations($email);
             
-            // Redirect to homepage demos section after successful registration
-            header('Location: index.php#demos');
-            exit;
+            // Sla op voor EmailJS
+            $_SESSION['emailjs_naam'] = $name;
+            $_SESSION['emailjs_email'] = $email;
+            $_SESSION['emailjs_demos'] = implode(', ', $selectedDemos);
         } else {
             $error_message = 'You are already registered for the selected demo(s).';
         }
@@ -248,5 +233,31 @@ if ($userEmail) {
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        emailjs.init("2zBR--lVekRwOmgb2");
+
+        <?php if ($success_message && isset($_POST['register'])): ?>
+        emailjs.send(
+            "service_65py1u5",
+            "template_jsvarws",
+            {
+                naam:  "<?php echo addslashes($_SESSION['emailjs_naam'] ?? ''); ?>",
+                email: "<?php echo addslashes($_SESSION['emailjs_email'] ?? ''); ?>",
+                demos: "<?php echo addslashes($_SESSION['emailjs_demos'] ?? ''); ?>"
+            }
+        ).then(function() {
+            console.log("Bevestigingsmail verstuurd!");
+            window.location.href = "index.php#demos";
+        }, function(error) {
+            console.error("EmailJS fout:", error);
+            window.location.href = "index.php#demos";
+        });
+        <?php 
+        // Sessie data opruimen
+        unset($_SESSION['emailjs_naam'], $_SESSION['emailjs_email'], $_SESSION['emailjs_demos']);
+        endif; ?>
+    </script>
 </body>
 </html>

@@ -1,3 +1,4 @@
+
 -- Migration to add department field and registered_at timestamp to sign_up table
 -- Run this if you already have the sign_up table created
 

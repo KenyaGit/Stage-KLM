@@ -22,21 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quick_register'])) {
             if (!in_array($demo, $existingDemos)) {
                 if ($user->signUp($name, $email, $demo, $department)) {
                     $registeredCount++;
-                    
-                    $workshopStmt = $dbh->query(
-                        "SELECT s.date, s.time, s.location FROM schedule s 
-                         WHERE s.event = :demo LIMIT 1",
-                        ['demo' => $demo]
-                    );
-                    $workshop = $workshopStmt->fetch(PDO::FETCH_ASSOC);
-                    
-                    if ($workshop) {
-                        $workshopDate = date("l, F j, Y", strtotime($workshop['date']));
-                        $workshopTime = date("g:i A", strtotime($workshop['time']));
-                        $workshopLocation = $workshop['location'];
-                        
-                        Mailer::sendWorkshopConfirmation($name, $email, $demo, $workshopDate, $workshopTime, $workshopLocation);
-                    }
                 }
             }
         }
@@ -596,6 +581,8 @@ if ($userEmail) {
 
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- EmailJS -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <!-- Schedule Checkbox Handling -->
     <script>
@@ -654,6 +641,27 @@ if ($userEmail) {
         });
         
         updateSelectedDemos();
+
+        // ── EmailJS ──────────────────────────────────────────────
+        // Vervang de drie waarden hieronder met jouw eigen EmailJS gegevens
+        emailjs.init("2zBR--lVekRwOmgb2"); // ← Dashboard → Account → Public Key
+
+        <?php if ($success_message && isset($_POST['quick_register'])): ?>
+        // Stuur bevestigingsmail na succesvolle registratie
+        emailjs.send(
+            "service_65py1u5",   // ← Dashboard → Email Services → Service ID
+            "template_jsvarws",  // ← Dashboard → Email Templates → Template ID
+            {
+                naam:  "<?php echo addslashes($_POST['name'] ?? ''); ?>",
+                email: "<?php echo addslashes($_POST['email'] ?? ''); ?>",
+                demos: "<?php echo addslashes(implode(', ', $_POST['selected_demos'] ?? [])); ?>"
+            }
+        ).then(function() {
+            console.log("Bevestigingsmail verstuurd!");
+        }, function(error) {
+            console.error("EmailJS fout:", error);
+        });
+        <?php endif; ?>
     </script>
     
     <!-- Custom Smooth Scroll -->
