@@ -18,10 +18,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quick_register'])) {
         $existingDemos = $user->getUserRegistrations($email);
         
         $registeredCount = 0;
+        $demoDetails = [];
         foreach ($selectedDemos as $demo) {
             if (!in_array($demo, $existingDemos)) {
                 if ($user->signUp($name, $email, $demo, $department)) {
                     $registeredCount++;
+                    $scheduleInfo = $dbh->query(
+                        "SELECT date, time, location FROM schedule WHERE event = :demo LIMIT 1",
+                        ['demo' => $demo]
+                    )->fetch(PDO::FETCH_ASSOC);
+                    if ($scheduleInfo) {
+                        $demoDetails[] = $demo . ' | ' . date("D d/m/Y", strtotime($scheduleInfo['date'])) . ' at ' . date("H:i", strtotime($scheduleInfo['time'])) . ' - ' . $scheduleInfo['location'];
+                    } else {
+                        $demoDetails[] = $demo;
+                    }
                 }
             }
         }
@@ -32,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quick_register'])) {
             $_SESSION['user_email'] = $email;
             $_SESSION['registration_email'] = $email;
             $_SESSION['registered_demos'] = $user->getUserRegistrations($email);
+            $_SESSION['emailjs_demos_index'] = implode(" | ", $demoDetails);
         } else {
             $error_message = 'You are already registered for the selected demo(s).';
         }
@@ -55,11 +66,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contact'])) {
 $scheduleStmt = $dbh->query("SELECT * FROM schedule ORDER BY date, time");
 $schedules = $scheduleStmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Group schedules by date
+// Group schedules by date (max 3 days)
 $schedulesByDate = [];
 foreach ($schedules as $schedule) {
     $date = $schedule['date'];
     if (!isset($schedulesByDate[$date])) {
+        if (count($schedulesByDate) >= 3) continue;
         $schedulesByDate[$date] = [];
     }
     $schedulesByDate[$date][] = $schedule;
@@ -191,63 +203,32 @@ if ($userEmail) {
                 ?>
             <?php endif; ?>
             
-            <!-- Carousel -->
-            <div id="demosCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3500">
-                <div class="carousel-indicators">
-                    <?php 
-                    $totalSlides = ceil(count($demos) / 3);
-                    for ($i = 0; $i < $totalSlides; $i++): 
-                    ?>
-                        <button type="button" data-bs-target="#demosCarousel" data-bs-slide-to="<?php echo $i; ?>" 
-                                <?php echo $i === 0 ? 'class="active" aria-current="true"' : ''; ?> 
-                                aria-label="Slide <?php echo $i + 1; ?>"></button>
-                    <?php endfor; ?>
-                </div>
-                
-                <div class="carousel-inner">
-                    <?php 
-                    $chunkedDemos = array_chunk($demos, 3);
-                    foreach ($chunkedDemos as $index => $demoChunk): 
-                    ?>
-                        <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
-                            <div class="row justify-content-center">
-                                <?php foreach ($demoChunk as $demo): ?>
-                                    <div class="col-lg-4 col-md-6 mb-4">
-                                        <a href="demo-detail.php?demo=<?php echo urlencode($demo['title']); ?>" class="demo-card-link">
-                                            <div class="demo-card">
-                                                <?php if (!empty($demo['image_url'])): ?>
-                                                    <img src="<?php echo htmlspecialchars($demo['image_url']); ?>" 
-                                                         alt="<?php echo htmlspecialchars($demo['title']); ?>">
-                                                <?php endif; ?>
-                                                <div class="demo-card-body">
-                                                    <h5><?php echo htmlspecialchars($demo['title']); ?></h5>
-                                                    <p><?php echo htmlspecialchars($demo['description']); ?></p>
-                                                    <?php if (!empty($demo['video_url'])): ?>
-                                                        <span class="btn btn-video" onclick="event.preventDefault(); window.open('<?php echo htmlspecialchars($demo['video_url']); ?>', '_blank');">
-                                                            <i class="bi bi-play-circle"></i> Watch Video
-                                                        </span>
-                                                    <?php endif; ?>
-                                                    <div class="mt-2">
-                                                        <span class="text-primary"><i class="bi bi-arrow-right-circle"></i> View Details</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </a>
+            <!-- Demo Grid -->
+            <div class="row">
+                <?php foreach ($demos as $demo): ?>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <a href="demo-detail.php?demo=<?php echo urlencode($demo['title']); ?>" class="demo-card-link">
+                            <div class="demo-card">
+                                <?php if (!empty($demo['image_url'])): ?>
+                                    <img src="<?php echo htmlspecialchars($demo['image_url']); ?>" 
+                                         alt="<?php echo htmlspecialchars($demo['title']); ?>">
+                                <?php endif; ?>
+                                <div class="demo-card-body">
+                                    <h5><?php echo htmlspecialchars($demo['title']); ?></h5>
+                                    <p><?php echo htmlspecialchars($demo['description']); ?></p>
+                                    <?php if (!empty($demo['video_url'])): ?>
+                                        <span class="btn btn-video" onclick="event.preventDefault(); window.open('<?php echo htmlspecialchars($demo['video_url']); ?>', '_blank');">
+                                            <i class="bi bi-play-circle"></i> Watch Video
+                                        </span>
+                                    <?php endif; ?>
+                                    <div class="mt-2">
+                                        <span class="text-primary"><i class="bi bi-arrow-right-circle"></i> View Details</span>
                                     </div>
-                                <?php endforeach; ?>
+                                </div>
                             </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                
-                <button class="carousel-control-prev" type="button" data-bs-target="#demosCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#demosCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
@@ -273,8 +254,8 @@ if ($userEmail) {
                 <?php 
                 $dayColors = [
                     0 => 'day-white',      // Wednesday - white
-                    1 => 'day-lightblue',  // Thursday - light blue
-                    2 => 'day-darkblue'    // Friday - dark blue
+                    1 => 'day-white',      // Thursday - white
+                    2 => 'day-white'       // Friday - white
                 ];
                 $dayNames = ['Wednesday', 'Thursday', 'Friday'];
                 $dayIndex = 0;
@@ -300,22 +281,21 @@ if ($userEmail) {
                                                stripos($schedule['event'], 'opening') !== false ||
                                                stripos($schedule['event'], 'closing') !== false;
                                 ?>
-                                    <div class="<?php echo $scheduleClass; ?>" data-event="<?php echo htmlspecialchars($schedule['event']); ?>">
+                                    <div class="<?php echo $scheduleClass; ?>" data-event="<?php echo htmlspecialchars($schedule['event']); ?>"
+                                         <?php if (!$isLunch && !$isRegistered): ?>
+                                         onclick="toggleScheduleItem(this, '<?php echo htmlspecialchars(addslashes($schedule['event'])); ?>')"
+                                         style="cursor: pointer;"
+                                         <?php endif; ?>>
+                                        <?php if (!$isLunch): ?>
+                                            <input class="schedule-checkbox" 
+                                                   type="checkbox" 
+                                                   value="<?php echo htmlspecialchars($schedule['event']); ?>" 
+                                                   id="schedule_<?php echo $schedule['scheduleID']; ?>"
+                                                   <?php echo $isRegistered ? 'checked data-registered="true"' : ''; ?>
+                                                   style="display:none;">
+                                        <?php endif; ?>
                                         <div class="d-flex align-items-start">
-                                            <?php if (!$isLunch): ?>
-                                                <div class="form-check me-2">
-                                                    <input class="form-check-input schedule-checkbox" 
-                                                           type="checkbox" 
-                                                           value="<?php echo htmlspecialchars($schedule['event']); ?>" 
-                                                           id="schedule_<?php echo $schedule['scheduleID']; ?>"
-                                                           <?php echo $isRegistered ? 'checked' : ''; ?>>
-                                                </div>
-                                            <?php endif; ?>
-                                            <div class="flex-grow-1 schedule-item-content" 
-                                                 <?php if (!$isLunch): ?>
-                                                 onclick="window.location.href='demo-detail.php?demo=<?php echo urlencode($schedule['event']); ?>'"
-                                                 style="cursor: pointer;"
-                                                 <?php endif; ?>>
+                                            <div class="flex-grow-1 schedule-item-content">
                                                 <div class="time-badge">
                                                     <i class="bi bi-clock"></i>
                                                     <?php echo date("g:i A", strtotime($schedule['time'])); ?>
@@ -331,6 +311,14 @@ if ($userEmail) {
                                                     </span>
                                                 <?php endif; ?>
                                             </div>
+                                            <?php if (!$isLunch): ?>
+                                                <a href="demo-detail.php?demo=<?php echo urlencode($schedule['event']); ?>"
+                                                   class="btn-schedule-detail ms-2"
+                                                   onclick="event.stopPropagation();"
+                                                   title="View details">
+                                                    <i class="bi bi-arrow-right-circle-fill"></i>
+                                                </a>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -384,40 +372,9 @@ if ($userEmail) {
     <section id="contact">
         <div class="container">
             <h2 class="section-title">Contact Us</h2>
-            <div class="form-section">
-                <p class="text-center mb-4">Have questions? We'd love to hear from you!</p>
-                <?php if ($success_message && isset($_POST['contact'])): ?>
-                    <div class="alert alert-success" role="alert">
-                        <i class="bi bi-check-circle"></i> <?php echo $success_message; ?>
-                    </div>
-                <?php endif; ?>
-                <?php if ($error_message && isset($_POST['contact'])): ?>
-                    <div class="alert alert-danger" role="alert">
-                        <i class="bi bi-exclamation-triangle"></i> <?php echo $error_message; ?>
-                    </div>
-                <?php endif; ?>
-                <form method="POST" action="#contact">
-                    <div class="mb-3">
-                        <label for="contact_name" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="contact_name" name="name" 
-                               placeholder="Enter your name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="contact_email" class="form-label">Email Address</label>
-                        <input type="email" class="form-control" id="contact_email" name="email" 
-                               placeholder="your.email@example.com" required>
-                    </div>
-                    <div class="mb-4">
-                        <label for="contact_message" class="form-label">Message</label>
-                        <textarea class="form-control" id="contact_message" name="message" 
-                                  rows="5" placeholder="Your message..." required></textarea>
-                    </div>
-                    <div class="text-center">
-                        <button type="submit" name="contact" class="btn btn-klm">
-                            <i class="bi bi-send"></i> Send Message
-                        </button>
-                    </div>
-                </form>
+            <div class="form-section text-center">
+                <p class="mb-3">Contact us if you have any questions.</p>
+                <p>You can send an email to <a href="mailto:testklm2025@outlook.com">testklm2025@outlook.com</a> and we will respond as soon as possible.</p>
             </div>
         </div>
     </section>
@@ -538,8 +495,7 @@ if ($userEmail) {
                             </h2>
                             <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    If you wish to cancel your registration, please contact us through the 
-                                    <a href="#contact">contact form</a> or use the information in your confirmation email.
+                                    If you wish to cancel your registration, please contact us at <a href="mailto:testklm2025@outlook.com">testklm2025@outlook.com</a> or use the information in your confirmation email.
                                 </div>
                             </div>
                         </div>
@@ -554,8 +510,7 @@ if ($userEmail) {
                             </h2>
                             <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    For further questions, you can use the <a href="#contact">contact form</a>. 
-                                    Our team will respond to your inquiry as soon as possible.
+                                    For further questions, you can send an email to <a href="mailto:testklm2025@outlook.com">testklm2025@outlook.com</a> and we will respond as soon as possible.
                                 </div>
                             </div>
                         </div>
@@ -595,10 +550,10 @@ if ($userEmail) {
             const selected = Array.from(checkboxes)
                 .filter(cb => cb.checked && !cb.hasAttribute('data-registered'))
                 .map(cb => cb.value);
-            
+
             selectedCountSpan.textContent = selected.length;
             registerBtn.disabled = selected.length === 0;
-            
+
             // Update hidden inputs
             selectedDemosContainer.innerHTML = '';
             selected.forEach(demo => {
@@ -608,38 +563,29 @@ if ($userEmail) {
                 input.value = demo;
                 selectedDemosContainer.appendChild(input);
             });
-            
-            // Update visual state
+
+            // Update visual state for non-preregistered items
             checkboxes.forEach(cb => {
-                const scheduleItem = cb.closest('.schedule-item');
-                if (scheduleItem) {
-                    if (cb.checked) {
-                        scheduleItem.classList.add('registered');
-                    } else {
-                        scheduleItem.classList.remove('registered');
+                if (!cb.hasAttribute('data-registered')) {
+                    const scheduleItem = cb.closest('.schedule-item');
+                    if (scheduleItem) {
+                        if (cb.checked) {
+                            scheduleItem.classList.add('selected-pending');
+                        } else {
+                            scheduleItem.classList.remove('selected-pending');
+                        }
                     }
                 }
             });
         }
-        
-        // Mark already registered checkboxes
-        checkboxes.forEach(cb => {
-            if (cb.checked) {
-                cb.setAttribute('data-registered', 'true');
-            }
-        });
-        
-        checkboxes.forEach(cb => {
-            cb.addEventListener('change', updateSelectedDemos);
-        });
-        
-        // Prevent checkbox click from triggering card click
-        checkboxes.forEach(cb => {
-            cb.addEventListener('click', (e) => {
-                e.stopPropagation();
-            });
-        });
-        
+
+        function toggleScheduleItem(element, eventName) {
+            const cb = element.querySelector('.schedule-checkbox');
+            if (!cb || cb.hasAttribute('data-registered')) return;
+            cb.checked = !cb.checked;
+            updateSelectedDemos();
+        }
+
         updateSelectedDemos();
 
         // ── EmailJS ──────────────────────────────────────────────
@@ -654,7 +600,7 @@ if ($userEmail) {
             {
                 naam:  "<?php echo addslashes($_POST['name'] ?? ''); ?>",
                 email: "<?php echo addslashes($_POST['email'] ?? ''); ?>",
-                demos: "<?php echo addslashes(implode(', ', $_POST['selected_demos'] ?? [])); ?>"
+                demos: "<?php echo addslashes($_SESSION['emailjs_demos_index'] ?? implode(', ', $_POST['selected_demos'] ?? [])); ?>"
             }
         ).then(function() {
             console.log("Bevestigingsmail verstuurd!");

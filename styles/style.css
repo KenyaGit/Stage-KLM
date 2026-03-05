@@ -136,7 +136,7 @@ section:nth-child(even) {
 }
 
 .day-white {
-    background: white;
+    background: #e8f4fc;
 }
 
 .day-lightblue {
@@ -203,13 +203,14 @@ section:nth-child(even) {
 
 .day-events {
     padding: 15px;
+    background-color: #ddeef8;
 }
 
 .schedule-item {
     background: white;
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 12px;
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 7px;
     border-left: 4px solid var(--klm-blue);
     transition: all 0.3s ease;
 }
@@ -228,22 +229,22 @@ section:nth-child(even) {
     display: inline-block;
     background: var(--klm-light-blue);
     color: var(--klm-dark-blue);
-    padding: 4px 12px;
+    padding: 2px 8px;
     border-radius: 20px;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .event-title {
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--klm-dark-blue);
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .event-location {
-    font-size: 0.85rem;
+    font-size: 0.775rem;
     color: #666;
 }
 
@@ -464,7 +465,51 @@ footer a {
     margin-bottom: -20px;
 }
 
-/* Responsive */
+/* Schedule item colors matching day column */
+.day-lightblue .schedule-item {
+    background: linear-gradient(135deg, #d0eaf8 0%, #b8d9ef 100%);
+    border-left-color: var(--klm-dark-blue);
+}
+
+.day-lightblue .schedule-item:hover {
+    background: linear-gradient(135deg, #b8d9ef 0%, #9fc9e6 100%);
+}
+
+
+/* Selected-pending state (clicked but not yet submitted) */
+.schedule-item.selected-pending {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+    border-left-color: #ffc107;
+}
+
+.day-darkblue .schedule-item.selected-pending {
+    background: rgba(255, 193, 7, 0.25);
+    border-left-color: #ffc107;
+}
+
+/* Arrow detail button in schedule items */
+.btn-schedule-detail {
+    display: flex;
+    align-items: center;
+    color: var(--klm-blue);
+    font-size: 1.4rem;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-schedule-detail:hover {
+    color: var(--klm-dark-blue);
+    transform: scale(1.15);
+}
+
+.day-darkblue .btn-schedule-detail {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.day-darkblue .btn-schedule-detail:hover {
+    color: white;
+}
 @media (max-width: 768px) {
     #home h1 {
         font-size: 2.5rem;

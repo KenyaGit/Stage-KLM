@@ -15,19 +15,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     $department = $_POST['department'] ?? '';
     $selectedDemos = $_POST['demos'] ?? [];
     
-    if (empty($selectedDemos)) {
-        $error_message = 'Please select at least one demo.';
-    } else {
+    // Fallback to the current demo from URL if no demos were posted
+    if (empty($selectedDemos) && $demoTitle) {
+        $selectedDemos = [$demoTitle];
+    }
+
+    if (true) {
         $user = new User($dbh);
         
         // Get existing registrations from DATABASE for THIS email
         $existingDemos = $user->getUserRegistrations($email);
         
         $registeredCount = 0;
+        $demoDetails = [];
         foreach ($selectedDemos as $demo) {
             if (!in_array($demo, $existingDemos)) {
                 if ($user->signUp($name, $email, $demo, $department)) {
                     $registeredCount++;
+                    $scheduleInfo = $dbh->query(
+                        "SELECT date, time, location FROM schedule WHERE event = :demo LIMIT 1",
+                        ['demo' => $demo]
+                    )->fetch(PDO::FETCH_ASSOC);
+                    if ($scheduleInfo) {
+                        $demoDetails[] = $demo . ' | ' . date("D d/m/Y", strtotime($scheduleInfo['date'])) . ' at ' . date("H:i", strtotime($scheduleInfo['time'])) . ' - ' . $scheduleInfo['location'];
+                    } else {
+                        $demoDetails[] = $demo;
+                    }
                 }
             }
         }
@@ -42,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             // Sla op voor EmailJS
             $_SESSION['emailjs_naam'] = $name;
             $_SESSION['emailjs_email'] = $email;
-            $_SESSION['emailjs_demos'] = implode(', ', $selectedDemos);
+            $_SESSION['emailjs_demos'] = implode(' | ', $demoDetails);
         } else {
             $error_message = 'You are already registered for the selected demo(s).';
         }
@@ -94,8 +107,8 @@ if ($userEmail) {
                 <img src="img/KLM2.png" alt="KLM Logo" class="me-2">
                 <span class="fw-bold">Innovation Pop Up</span>
             </a>
-            <a href="index.php" class="btn btn-outline-light">
-                <i class="bi bi-arrow-left"></i> Back to Home
+            <a href="index.php#demos" class="btn btn-outline-light">
+                <i class="bi bi-arrow-left"></i> Back to Demos
             </a>
         </div>
     </nav>
@@ -188,24 +201,7 @@ if ($userEmail) {
                                     <input type="text" class="form-control" id="department" name="department" 
                                            placeholder="e.g., Engineering, Marketing">
                                 </div>
-                                
-                                <div class="mb-4">
-                                    <label class="form-label">Select Demos *</label>
-                                    <?php foreach ($allDemos as $d): ?>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="demos[]" 
-                                                   value="<?php echo htmlspecialchars($d['title']); ?>" 
-                                                   id="demo_<?php echo $d['demoID']; ?>">
-                                            <label class="form-check-label" for="demo_<?php echo $d['demoID']; ?>">
-                                                <?php echo htmlspecialchars($d['title']); ?>
-                                                <?php if ($userEmail && in_array($d['title'], $registeredDemos)): ?>
-                                                    <span class="badge bg-success">Already Registered</span>
-                                                <?php endif; ?>
-                                            </label>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                                
+        
                                 <div class="text-center">
                                     <button type="submit" name="register" class="btn btn-klm">
                                         <i class="bi bi-check-lg"></i> Register Now
@@ -226,7 +222,7 @@ if ($userEmail) {
                     <p class="mb-0">&copy; 2025 KLM Innovation Fair. All rights reserved.</p>
                 </div>
                 <div class="col-md-6 text-md-end text-center">
-                    <a href="index.php" class="me-3"><i class="bi bi-house"></i> Back to Home</a>
+                    <a href="index.php#demos" class="me-3"><i class="bi bi-house"></i> Back to Home</a>
                 </div>
             </div>
         </div>
