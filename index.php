@@ -158,26 +158,28 @@ if ($userEmail) {
     <!-- About Section -->
     <section id="about">
         <div class="container">
-            <h2 class="section-title">About the Innovation Fair</h2>
+            <h2 class="section-title">About the Innovation Pop Up</h2>
             <div class="row">
                 <div class="col-lg-10 mx-auto">
                     <div class="card border-0 shadow-lg">
                         <div class="card-body p-5">
                             <p class="lead">
-                                The Innovation Pop Up is dedicated to showcasing the latest advancements and creative 
-                                solutions in KLM. Innovation events (where technological and innovative developments 
-                                are shared) contribute to informing, inspiring and connecting employees to innovation 
-                                and thus collectively growing an innovation mindset and progressive actions.
+                                The KLM Innovation Pop Up is a low-key, high-impact event where innovation 
+                                comes to you. Instead of one big fair, we bring innovations directly to the 
+                                workplace — across multiple locations within KLM Engineering & Maintenance.
                             </p>
                             <p>
-                                The Innovation Safari can be designed as a journey through an aircraft's maintenance 
-                                chain, a journey that symbolizes the future of MRO. From the moment an aircraft arrives 
-                                at Airframe with the motor tok, through its disassembly at Engine Services, Component 
-                                Services, and Airframe, to its reassembly and return with the motor tok. At every point 
-                                in this journey, we demonstrate how innovation enables, changes, and improves these steps.
+                                Think of it as an Innovation Pop Up: a journey through the MRO chain, from 
+                                Airframe to Engine Services and beyond. At each stop, teams showcase how 
+                                they are using new technologies and creative solutions to improve their work — 
+                                hands-on, interactive, and close to the floor.
+                            </p>
+                            <p>
+                                The goal is simple: inform, inspire, and connect KLM employees with innovation, 
+                                and together grow an innovation mindset that drives us forward.
                             </p>
                             <p class="mb-0">
-                                <strong>Join us to discover, learn, and connect!</strong>
+                                <strong>Join us to explore, experience, and get inspired!</strong>
                             </p>
                         </div>
                     </div>
@@ -396,9 +398,9 @@ if ($userEmail) {
                             </h2>
                             <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    The Innovation Pop Up is an event showcasing the latest technological developments 
-                                    and innovative solutions within KLM. The goal is to inform, inspire, and connect 
-                                    employees with innovation.
+                                    The Innovation Pop Up is a low-key event where innovation comes to you.
+                                    Instead of one big fair, innovations are showcased across multiple locations within KLM E&M like a Safari through the MRO chain.
+                                    The goal is to inform, inspire, and connect KLM employees with innovation
                                 </div>
                             </div>
                         </div>
