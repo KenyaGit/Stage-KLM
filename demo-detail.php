@@ -245,11 +245,12 @@ if ($userEmail) {
             }
         ).then(function() {
             console.log("Bevestigingsmail verstuurd!");
-            window.location.href = "index.php#demos";
         }, function(error) {
             console.error("EmailJS fout:", error);
-            window.location.href = "index.php#demos";
         });
+        setTimeout(function() {
+            window.location.href = "index.php#demos";
+        }, 1000);
         <?php 
         // Sessie data opruimen
         unset($_SESSION['emailjs_naam'], $_SESSION['emailjs_email'], $_SESSION['emailjs_demos']);

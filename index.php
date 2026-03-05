@@ -40,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quick_register'])) {
             $success_message = "Successfully registered for $registeredCount demo(s)! Check your email for confirmation.";
             // Update session with THIS user's email and registrations
             $_SESSION['user_email'] = $email;
-            $_SESSION['registration_email'] = $email;
             $_SESSION['registered_demos'] = $user->getUserRegistrations($email);
             $_SESSION['emailjs_demos_index'] = implode(" | ", $demoDetails);
         } else {
@@ -608,6 +607,14 @@ if ($userEmail) {
             console.log("Bevestigingsmail verstuurd!");
         }, function(error) {
             console.error("EmailJS fout:", error);
+        });
+        // Scroll terug naar de schedule sectie
+        window.addEventListener('load', function() {
+            const scheduleSection = document.getElementById('schedule');
+            if (scheduleSection) {
+                const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                window.scrollTo({ top: scheduleSection.offsetTop - navbarHeight, behavior: 'instant' });
+            }
         });
         <?php endif; ?>
     </script>
