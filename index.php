@@ -375,7 +375,7 @@ if ($userEmail) {
             <h2 class="section-title">Contact Us</h2>
             <div class="form-section text-center">
                 <p class="mb-3">Contact us if you have any questions.</p>
-                <p>You can send an email to <a href="mailto:testklm2025@outlook.com">testklm2025@outlook.com</a> and we will respond as soon as possible.</p>
+                <p>You can send an email to <a href="mailto:Serdar.Cifoglu@klm.com">Serdar.Cifoglu@klm.com</a> and we will respond as soon as possible.</p>
             </div>
         </div>
     </section>
@@ -496,7 +496,7 @@ if ($userEmail) {
                             </h2>
                             <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    If you wish to cancel your registration, please contact us at <a href="mailto:testklm2025@outlook.com">testklm2025@outlook.com</a> or use the information in your confirmation email.
+                                    If you wish to cancel your registration, please contact us at <a href="mailto:Serdar.Cifoglu@klm.com">Serdar.Cifoglu@klm.com</a> or use the information in your confirmation email.
                                 </div>
                             </div>
                         </div>
@@ -511,7 +511,7 @@ if ($userEmail) {
                             </h2>
                             <div id="faq8" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                                 <div class="accordion-body">
-                                    For further questions, you can send an email to <a href="mailto:testklm2025@outlook.com">testklm2025@outlook.com</a> and we will respond as soon as possible.
+                                    For further questions, you can send an email to <a href="mailto:Serdar.Cifoglu@klm.com">Serdar.Cifoglu@klm.com</a> and we will respond as soon as possible.
                                 </div>
                             </div>
                         </div>
